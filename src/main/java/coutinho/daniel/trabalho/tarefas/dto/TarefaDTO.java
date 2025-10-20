@@ -1,14 +1,24 @@
 package coutinho.daniel.trabalho.tarefas.dto;
 
-import coutinho.daniel.trabalho.tarefas.model.TarefaModel;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+import java.time.LocalDate;
 import java.util.Date;
 
 public class TarefaDTO{
 
-    String nome;
-    String responsavel;
-    Date dataEntrega;
+    @NotBlank(message = "O nome não pode estar em branco")
+    @Size(min = 3, message = "O nome deve ter no mínimo 3 caracteres")
+    private String nome;
+
+    @NotBlank(message = "O responsavel não pode estar em branco")
+    @Size(min = 3, message = "O responsavel deve ter no mínimo 3 caracteres")
+    private String responsavel;
+
+    private LocalDate dataEntrega;
 
     public String getNome() {
         return nome;
@@ -26,11 +36,11 @@ public class TarefaDTO{
         this.responsavel = responsavel;
     }
 
-    public Date getDataEntrega() {
+    public LocalDate getDataEntrega() {
         return dataEntrega;
     }
 
-    public void setDataEntrega(Date dataEntrega) {
+    public void setDataEntrega(LocalDate dataEntrega) {
         this.dataEntrega = dataEntrega;
     }
 }

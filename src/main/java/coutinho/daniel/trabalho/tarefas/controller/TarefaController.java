@@ -4,9 +4,13 @@ import coutinho.daniel.trabalho.tarefas.dto.TarefaDTO;
 import coutinho.daniel.trabalho.tarefas.model.TarefaModel;
 import coutinho.daniel.trabalho.tarefas.repository.TarefaRepository;
 import coutinho.daniel.trabalho.tarefas.service.TarefaService;
+import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -19,31 +23,42 @@ public class TarefaController {
     TarefaService tarefaService;
 
     @Autowired
-    public TarefaController(TarefaRepository tarefaRepository) {
-        this.tarefaRepository = tarefaRepository;
-    }
+    public TarefaController(TarefaRepository tarefaRepository) {this.tarefaRepository = tarefaRepository;}
 
     @GetMapping
-    public List<TarefaModel> getAllUsers(){
-        return tarefaRepository.findAll();
+    public ResponseEntity<List<TarefaModel>> getAllTarefas(){
+        return ResponseEntity.ok(tarefaRepository.findAll());
     }
 
     @RequestMapping(value = { "/{tarefaId}", "/{tarefaId}/" }, method = RequestMethod.GET)
-    public TarefaModel getUserByID(@PathVariable long tarefaId){
-        return tarefaRepository.findById(tarefaId).get();
+    public ResponseEntity<TarefaModel> getTarefaByID(@PathVariable long tarefaId){
+        return tarefaRepository.findById(tarefaId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    @RequestMapping(value = { "/{tarefaId}", "/{tarefaId}/" }, method = RequestMethod.POST)
-    public TarefaModel updateUserById(@PathVariable long tarefaId, @RequestBody TarefaDTO tarefaDTO){
+    @RequestMapping(value = { "/{tarefaId}", "/{tarefaId}/" }, method = RequestMethod.PUT)
+    public ResponseEntity<TarefaModel> updateTarefaById(@PathVariable long tarefaId, @RequestBody TarefaDTO tarefaDTO){
         TarefaModel tarefaModel = tarefaService.getTarefaModel(tarefaDTO);
         tarefaModel.setId(tarefaId);
-        return tarefaRepository.save(tarefaModel);
+        return ResponseEntity.ok(tarefaRepository.save(tarefaModel));
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public TarefaModel insertUser(@RequestBody TarefaDTO tarefaDTO){
+    public ResponseEntity<TarefaModel> insertTarefa(@RequestBody @Valid TarefaDTO tarefaDTO){
         TarefaModel tarefaModel = tarefaService.getTarefaModel(tarefaDTO);
-        return tarefaRepository.save(tarefaModel);
+        TarefaModel salvo = tarefaRepository.save(tarefaModel);
+        return ResponseEntity.created(URI.create("tarefas/"+salvo.getId())).body(salvo);
     }
 
+    @RequestMapping(value = { "/{tarefaId}", "/{tarefaId}/" }, method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<String> deleteTarefaById(@PathVariable long tarefaId){
+        if(!tarefaRepository.existsById(tarefaId)){
+            return ResponseEntity.notFound().build();
+        }
+        tarefaRepository.deleteById(tarefaId);
+        return ResponseEntity.noContent().build();
+    }
 }
+
+
+

@@ -1,16 +1,15 @@
 package coutinho.daniel.trabalho.tarefas.model;
 
-import coutinho.daniel.trabalho.tarefas.dto.TarefaDTO;
 import jakarta.persistence.*;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.time.LocalDate;
 import java.util.Date;
 
-@Entity
+@Entity(name = "tarefas")
 public class TarefaModel {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     Long id;
 
     @Column(name="name", nullable = false)
@@ -20,7 +19,7 @@ public class TarefaModel {
     String responsavel;
 
     @Column(name="data", nullable = false)
-    Date dataEntrega;
+    LocalDate dataEntrega;
 
     public Long getId() {
         return this.id;
@@ -46,11 +45,11 @@ public class TarefaModel {
         this.responsavel = responsavel;
     }
 
-    public Date getDataEntrega() {
+    public LocalDate getDataEntrega() {
         return dataEntrega;
     }
 
-    public void setDataEntrega(Date dataEntrega) {
+    public void setDataEntrega(LocalDate dataEntrega) {
         this.dataEntrega = dataEntrega;
     }
 }
